@@ -38,7 +38,7 @@ async def rank_resume(
         score = get_similarity_score(resume_clean, job_clean)
         feedback = (
             "✅ Strong match! Your resume aligns well with the job."
-            if score > 0.7
+            if score > 0.75
             else "📝 Consider tailoring your resume more closely to the job description."
         )
 
