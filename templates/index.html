@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/style.css" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resume Ranker</title>
+  <script>
+    async function submitForm(event) {
+      event.preventDefault();
+      const form = document.getElementById("rankForm");
+      const formData = new FormData(form);
+
+      const response = await fetch("/rank-resume/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      document.getElementById("result").innerText =
+        `Similarity Score: ${result.similarity_score}\nFeedback: ${result.feedback}`;
+    }
+  </script>
+</head>
+<body style="font-family: sans-serif; margin: 40px;">
+  <h1>🤖 Resume Ranker</h1>
+  <form id="rankForm" onsubmit="submitForm(event)">
+    <label>Upload Resume (PDF):</label><br />
+    <input type="file" name="file" accept=".pdf" required /><br /><br />
+
+    <label>Paste Job Description:</label><br />
+    <textarea name="job_description" rows="6" cols="60" required></textarea><br /><br />
+
+    <button type="submit">Rank My Resume</button>
+  </form>
+
+  <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+</body>
+</html>
