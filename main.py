@@ -8,7 +8,7 @@ import os
 
 app = FastAPI()
 
-# Mount static files (CSS)
+# Mount CSS
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Set up templates directory

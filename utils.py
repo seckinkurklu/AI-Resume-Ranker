@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-model = SentenceTransformer('all-MiniLM-L6-v2')  # Lightweight and fast
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
