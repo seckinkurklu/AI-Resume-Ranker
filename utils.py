@@ -41,3 +41,28 @@ def compare_keywords(resume_text, job_keywords):
     present = [kw for kw in job_keywords if kw.lower() in resume_text.lower()]
     missing = [kw for kw in job_keywords if kw.lower() not in resume_text.lower()]
     return present, missing
+
+def get_section_scores(resume_text, job_desc_text):
+    sections = {
+        "Skills": extract_section(job_desc_text, ["skills", "requirements"]),
+        "Experience": extract_section(job_desc_text, ["experience", "responsibilities"]),
+        "Education": extract_section(job_desc_text, ["education", "skills"]),
+    }
+
+    scores = {}
+    for name, section in sections.items():
+        if section.strip():
+            score = get_similarity_score(resume_text, section)
+            scores[name] = score
+        else:
+            scores[name] = None
+
+        return scores
+
+def extract_section(text, keywords):
+    text = text.lower()
+    for keyword in keywords:
+        if keyword in text:
+            start = text.find(keyword)
+            return text[start:start + 500]
+    return ""

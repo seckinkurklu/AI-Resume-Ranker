@@ -8,9 +8,9 @@
   <script>
     async function submitForm(event) {
       event.preventDefault();
+
       const form = document.getElementById("rankForm");
       const formData = new FormData(form);
-
       const resultBox = document.getElementById("result");
       resultBox.innerText = "⏳ Analyzing resume...";
 
@@ -25,8 +25,21 @@
         }
 
         const result = await response.json();
-        resultBox.innerText =
-          `🧠 Similarity Score: ${result.similarity_score}\n\n${result.feedback}`;
+
+        // Overall score and feedback
+        let output = `🧠 Similarity Score: ${result.similarity_score}\n\n${result.feedback}`;
+
+        // Section breakdown
+        if (result.section_scores) {
+          output += `\n\n📊 Section-wise Scores:\n`;
+          for (const section in result.section_scores) {
+            const score = result.section_scores[section];
+            output += `${section}: ${score !== null ? score : "❓ Not found in JD"}\n`;
+          }
+        }
+
+        resultBox.innerText = output;
+
       } catch (error) {
         resultBox.innerText = "❌ Error: " + error.message;
       }
@@ -35,6 +48,7 @@
 </head>
 <body>
   <h1>🤖 Resume Ranker</h1>
+
   <form id="rankForm" onsubmit="submitForm(event)">
     <label for="resume">Upload Resume (PDF):</label><br />
     <input type="file" name="file" id="resume" accept=".pdf" required /><br /><br />

@@ -4,7 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sympy.series.gruntz import compare
 
-from utils import extract_text_from_pdf, clean_text, get_similarity_score, extract_keywords, compare_keywords
+from utils import extract_text_from_pdf, clean_text, get_similarity_score, extract_keywords, compare_keywords, \
+    get_section_scores
 import shutil
 import os
 
@@ -43,6 +44,9 @@ async def rank_resume(
         keywords = extract_keywords(job_clean, top_n=10)
         present, missing = compare_keywords(resume_clean, keywords)
 
+        #section scores
+        section_scores = get_section_scores(resume_clean, job_clean)
+
 
         #feedback
         score_feedback = (
@@ -61,6 +65,7 @@ async def rank_resume(
 
         return {
             "similarity_score": score,
+            "section_scores": section_scores,
             "feedback": feedback
         }
 
