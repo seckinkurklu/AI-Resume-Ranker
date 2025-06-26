@@ -1,41 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link rel="stylesheet" href="/static/style.css" />
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resume Ranker</title>
+  <link rel="stylesheet" href="/static/style.css" />
   <script>
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("rankForm");
       const formData = new FormData(form);
 
-      const response = await fetch("/rank-resume/", {
-        method: "POST",
-        body: formData,
-      });
+      const resultBox = document.getElementById("result");
+      resultBox.innerText = "⏳ Analyzing resume...";
 
-      const result = await response.json();
-      document.getElementById("result").innerText =
-        `Similarity Score: ${result.similarity_score}\nFeedback: ${result.feedback}`;
+      try {
+        const response = await fetch("/rank-resume/", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Something went wrong. Please try again.");
+        }
+
+        const result = await response.json();
+        resultBox.innerText =
+          `🧠 Similarity Score: ${result.similarity_score}\n\n${result.feedback}`;
+      } catch (error) {
+        resultBox.innerText = "❌ Error: " + error.message;
+      }
     }
   </script>
 </head>
-<body style="font-family: sans-serif; margin: 40px;">
+<body>
   <h1>🤖 Resume Ranker</h1>
   <form id="rankForm" onsubmit="submitForm(event)">
-    <label>Upload Resume (PDF):</label><br />
-    <input type="file" name="file" accept=".pdf" required /><br /><br />
+    <label for="resume">Upload Resume (PDF):</label><br />
+    <input type="file" name="file" id="resume" accept=".pdf" required /><br /><br />
 
-    <label>Paste Job Description:</label><br />
-    <textarea name="job_description" rows="6" cols="60" required></textarea><br /><br />
+    <label for="job_description">Paste Job Description:</label><br />
+    <textarea name="job_description" id="job_description" rows="8" required></textarea><br /><br />
 
-    <button type="submit">Rank My Resume</button>
+    <button type="submit">🔍 Analyze</button>
   </form>
 
-  <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+  <pre id="result" style="margin-top: 20px;"></pre>
 </body>
 </html>

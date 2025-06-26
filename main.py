@@ -2,7 +2,9 @@ from fastapi import FastAPI, File, UploadFile, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from utils import extract_text_from_pdf, clean_text, get_similarity_score
+from sympy.series.gruntz import compare
+
+from utils import extract_text_from_pdf, clean_text, get_similarity_score, extract_keywords, compare_keywords
 import shutil
 import os
 
@@ -36,11 +38,26 @@ async def rank_resume(
 
         # Calculate similarity
         score = get_similarity_score(resume_clean, job_clean)
-        feedback = (
+
+        #keywords
+        keywords = extract_keywords(job_clean, top_n=10)
+        present, missing = compare_keywords(resume_clean, keywords)
+
+
+        #feedback
+        score_feedback = (
             "✅ Strong match! Your resume aligns well with the job."
             if score > 0.75
             else "📝 Consider tailoring your resume more closely to the job description."
         )
+
+        keywords_feedback = (
+        f"\n\n🔍 Keywords found: {', '.join(present)}\n❗ Missing: {', '.join(missing)}"
+        if missing else
+        "\n\nAll key terms are covered!"
+        )
+
+        feedback = score_feedback + keywords_feedback
 
         return {
             "similarity_score": score,
